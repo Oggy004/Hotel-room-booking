@@ -1,0 +1,290 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+@import "tailwindcss";
+
+
+@theme {
+  --color-primary: #b98a5a;
+  --color-secondary: #f4ede4
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #f7f1ea;
+  color: #211c18;
+  font-family: Montserrat, sans-serif;
+  transition: background-color 300ms ease, color 300ms ease;
+}
+
+h1,
+h2,
+h3,
+.font-display {
+  font-family: "Cormorant Garamond", serif;
+}
+
+.font-Cormorant {
+  font-family: Montserrat !important;
+}
+
+::selection {
+  background: #c49a6c;
+  color: #fff;
+}
+
+.luxury-page {
+  background: #f7f1ea;
+}
+
+.luxury-hero-overlay {
+  background:
+    linear-gradient(90deg, rgba(20, 15, 12, 0.82), rgba(20, 15, 12, 0.42), rgba(20, 15, 12, 0.78)),
+    linear-gradient(180deg, rgba(20, 15, 12, 0.25), rgba(20, 15, 12, 0.78));
+}
+
+.hero-booking-panel {
+  background: rgba(255, 250, 245, 0.95);
+  color: #211c18;
+}
+
+.hero-booking-label {
+  color: #9a7654;
+}
+
+.hero-booking-input {
+  background: #ffffff;
+  color: #211c18;
+  border-color: #d8c7b5;
+}
+
+.hero-booking-input::placeholder {
+  color: #9b8d80;
+}
+
+.hero-booking-icon {
+  opacity: 0.72;
+  filter: none;
+}
+
+.reveal-up {
+  animation: revealUp 800ms ease both;
+}
+
+.reveal-up-delay {
+  animation: revealUp 900ms ease 120ms both;
+}
+
+.soft-float {
+  animation: softFloat 5s ease-in-out infinite;
+}
+
+@keyframes revealUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes softFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.rainbow {
+  position: relative;
+  z-index: 0;
+  overflow: hidden;
+  border-radius: 9999px;
+  padding: 2px;
+  transition: transform 300ms ease;
+}
+
+.rainbow:hover {
+  transform: scale(1.05);
+}
+
+.rainbow:active {
+  transform: scale(1);
+}
+
+.rainbow::before {
+  content: "";
+  position: absolute;
+  z-index: -2;
+  left: -50%;
+  top: -50%;
+  width: 200%;
+  height: 200%;
+  background-position: 100% 50%;
+  background-repeat: no-repeat;
+  background-size: 50% 30%;
+  filter: blur(6px);
+  background-image: conic-gradient(from 90deg, transparent 0 55%, #fff 62%, #c49a6c 70%, #fff 78%, transparent 86%);
+  animation: rotate 4s linear infinite;
+}
+
+.rainbow::after {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  z-index: -1;
+  border-radius: inherit;
+  background: rgba(17, 15, 13, 0.82);
+}
+
+@keyframes rotate {
+  100% {
+    transform: rotate(1turn);
+  }
+}
+
+.marquee-inner {
+  animation: marqueeScroll linear infinite;
+}
+
+.marquee-reverse {
+  animation-direction: reverse;
+}
+
+@keyframes marqueeScroll {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+body.theme-dark-mode {
+  background: #120f0d;
+  color: #f6efe7;
+}
+
+body.theme-dark-mode .luxury-page,
+body.theme-dark-mode section.bg-white,
+body.theme-dark-mode .bg-white,
+body.theme-dark-mode .bg-\[\#f7f1ea\],
+body.theme-dark-mode .bg-\[\#f1ebe4\],
+body.theme-dark-mode .bg-\[\#fffaf5\] {
+  background-color: #181311 !important;
+}
+
+body.theme-dark-mode .bg-\[\#211c18\],
+body.theme-dark-mode .bg-\[\#1b1714\] {
+  background-color: #0f0c0a !important;
+}
+
+body.theme-dark-mode .theme-navbar.bg-\[\#fffaf5\]\/90,
+body.theme-dark-mode .theme-navbar {
+  background-color: rgba(18, 15, 13, 0.92) !important;
+  color: #f6efe7 !important;
+}
+
+body.theme-dark-mode .theme-navbar-overlay {
+  background-color: #181311 !important;
+  color: #f6efe7 !important;
+}
+
+body.theme-dark-mode footer {
+  background-color: #0f0c0a !important;
+  color: #f6efe7 !important;
+}
+
+body.theme-dark-mode .border-\[\#e1d2c2\],
+body.theme-dark-mode .border-\[\#eadfd3\],
+body.theme-dark-mode .border-\[\#d8c7b5\],
+body.theme-dark-mode .border-\[\#d4b28f\],
+body.theme-dark-mode .border-white\/10,
+body.theme-dark-mode .border-white\/40,
+body.theme-dark-mode .border-gray-300 {
+  border-color: rgba(196, 154, 108, 0.28) !important;
+}
+
+body.theme-dark-mode .text-\[\#211c18\],
+body.theme-dark-mode .text-\[\#6f6257\],
+body.theme-dark-mode .text-\[\#9a7654\],
+body.theme-dark-mode .text-\[\#dfd2c6\],
+body.theme-dark-mode .text-gray-800,
+body.theme-dark-mode .text-gray-700,
+body.theme-dark-mode .text-gray-600,
+body.theme-dark-mode .text-gray-500 {
+  color: #f6efe7 !important;
+}
+
+body.theme-dark-mode .text-\[\#b98a5a\],
+body.theme-dark-mode .text-\[\#c49a6c\] {
+  color: #d8a86f !important;
+}
+
+body.theme-dark-mode .bg-\[\#f1ebe4\],
+body.theme-dark-mode .bg-\[\#fffaf5\],
+body.theme-dark-mode .bg-white\/70,
+body.theme-dark-mode .bg-white\/80,
+body.theme-dark-mode .bg-white\/90 {
+  background-color: rgba(33, 27, 23, 0.92) !important;
+}
+
+body.theme-dark-mode .hero-booking-panel {
+  background: rgba(24, 19, 17, 0.94) !important;
+  color: #f6efe7 !important;
+}
+
+body.theme-dark-mode .hero-booking-label {
+  color: #d8a86f !important;
+}
+
+body.theme-dark-mode .hero-booking-input {
+  background: #211b18 !important;
+  color: #f6efe7 !important;
+  border-color: rgba(196, 154, 108, 0.28) !important;
+}
+
+body.theme-dark-mode .hero-booking-input::placeholder {
+  color: #cab9a8 !important;
+}
+
+body.theme-dark-mode .hero-booking-icon {
+  filter: brightness(0) saturate(100%) invert(92%) sepia(17%) saturate(333%) hue-rotate(334deg) brightness(98%) contrast(92%);
+  opacity: 0.9;
+}
+
+body.theme-dark-mode input,
+body.theme-dark-mode select,
+body.theme-dark-mode textarea {
+  background: #211b18 !important;
+  color: #f6efe7 !important;
+  border-color: rgba(196, 154, 108, 0.28) !important;
+}
+
+body.theme-dark-mode input::placeholder,
+body.theme-dark-mode textarea::placeholder {
+  color: #cab9a8 !important;
+}
+
+body.theme-dark-mode .from-\[\#f7f1ea\] {
+  --tw-gradient-from: #120f0d var(--tw-gradient-from-position) !important;
+}
+
+body.theme-dark-mode .to-transparent {
+  --tw-gradient-to: transparent var(--tw-gradient-to-position) !important;
+}
+
+body.theme-dark-mode .shadow-md,
+body.theme-dark-mode .shadow-lg,
+body.theme-dark-mode .shadow-\[0_18px_45px_rgba\(45\,35\,26\,0\.08\)\],
+body.theme-dark-mode .shadow-\[0_18px_45px_rgba\(45\,35\,26\,0\.10\)\],
+body.theme-dark-mode .shadow-\[0_18px_45px_rgba\(45\,35\,26\,0\.12\)\] {
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.35) !important;
+}
