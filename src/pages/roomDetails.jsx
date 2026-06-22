@@ -4,6 +4,34 @@ import { useUser } from '@clerk/react'
 import { rooms } from '../data/roomsData'
 import RoomCard from '../components/Roomcard'
 
+const getTodayDateString = () => {
+    const today = new Date()
+    const yyyy = today.getFullYear()
+    const mm = String(today.getMonth() + 1).padStart(2, '0')
+    const dd = String(today.getDate()).padStart(2, '0')
+    return `${yyyy}-${mm}-${dd}`
+}
+
+const getNextDateString = (dateStr) => {
+    if (!dateStr) return ''
+    const date = new Date(dateStr)
+    date.setDate(date.getDate() + 1)
+    const yyyy = date.getFullYear()
+    const mm = String(date.getMonth() + 1).padStart(2, '0')
+    const dd = String(date.getDate()).padStart(2, '0')
+    return `${yyyy}-${mm}-${dd}`
+}
+
+const calculateNights = (checkIn, checkOut) => {
+    if (!checkIn || !checkOut) return 0
+    const inDate = new Date(checkIn)
+    const outDate = new Date(checkOut)
+    const diffTime = outDate - inDate
+    if (diffTime <= 0) return 0
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+    return diffDays
+}
+
 const RoomDetails = () => {
     const { id } = useParams()
     const location = useLocation()
@@ -22,10 +50,37 @@ const RoomDetails = () => {
         guests: 1
     })
 
+    const nights = calculateNights(bookingData.checkIn, bookingData.checkOut)
+    const totalPrice = nights > 0 ? room.price * nights : room.price
+
     const handleBookingChange = (e) => {
-        setBookingData({
-            ...bookingData,
-            [e.target.name]: e.target.value
+        const { name, value } = e.target
+        setBookingData((prev) => {
+            const updated = {
+                ...prev,
+                [name]: value
+            }
+            if (name === 'checkIn') {
+                if (value && value.length === 10) {
+                    const todayStr = getTodayDateString()
+                    if (value < todayStr) {
+                        alert('Your date is not valid!')
+                        updated.checkIn = ''
+                    } else if (updated.checkOut && new Date(updated.checkOut) <= new Date(value)) {
+                        updated.checkOut = getNextDateString(value)
+                    }
+                }
+            }
+            if (name === 'checkOut') {
+                if (value && value.length === 10) {
+                    const todayStr = getTodayDateString()
+                    if (value < todayStr || (updated.checkIn && value <= updated.checkIn)) {
+                        alert('Your date is not valid!')
+                        updated.checkOut = ''
+                    }
+                }
+            }
+            return updated
         })
     }
 
@@ -40,13 +95,24 @@ const RoomDetails = () => {
             return
         }
 
+        const todayStr = getTodayDateString()
+        if (bookingData.checkIn < todayStr) {
+            alert('Your date is not valid!')
+            return
+        }
+
+        if (bookingData.checkOut <= bookingData.checkIn) {
+            alert('Your date is not valid!')
+            return
+        }
+
         // Store booking in localStorage
         const bookings = JSON.parse(localStorage.getItem('bookings') || '[]')
         bookings.push({
             id: Math.random(),
             roomId: room.id,
             roomName: room.name,
-            roomPrice: room.price,
+            roomPrice: totalPrice,
             userEmail: user.emailAddresses[0].emailAddress,
             ...bookingData,
             bookedAt: new Date().toLocaleDateString()
@@ -157,6 +223,7 @@ const RoomDetails = () => {
                                         name="checkIn"
                                         value={bookingData.checkIn}
                                         onChange={handleBookingChange}
+                                        min={getTodayDateString()}
                                         className="w-full border border-[#d8c7b5] px-4 py-3 outline-none transition focus:border-[#b98a5a]"
                                     />
                                 </div>
@@ -168,6 +235,7 @@ const RoomDetails = () => {
                                         name="checkOut"
                                         value={bookingData.checkOut}
                                         onChange={handleBookingChange}
+                                        min={bookingData.checkIn ? getNextDateString(bookingData.checkIn) : getNextDateString(getTodayDateString())}
                                         className="w-full border border-[#d8c7b5] px-4 py-3 outline-none transition focus:border-[#b98a5a]"
                                     />
                                 </div>
@@ -193,9 +261,15 @@ const RoomDetails = () => {
                                         <span className="text-[#6f6257]">Price per night:</span>
                                         <span className="font-semibold">₹{room.price}</span>
                                     </div>
+                                    {nights > 0 && (
+                                        <div className="flex justify-between mb-2 text-sm text-[#6f6257]">
+                                            <span>Nights:</span>
+                                            <span>{nights} {nights === 1 ? 'night' : 'nights'}</span>
+                                        </div>
+                                    )}
                                     <div className="flex justify-between text-lg font-bold text-[#211c18]">
                                         <span>Total:</span>
-                                        <span>₹{room.price}</span>
+                                        <span>₹{totalPrice}</span>
                                     </div>
                                 </div>
 

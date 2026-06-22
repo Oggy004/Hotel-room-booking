@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Hero from '../components/Hero'
 import RoomCard from '../components/Roomcard'
@@ -31,9 +31,221 @@ const testimonials = [
   { name: "Isha Rao", rating: "5/5", text: "A beautiful hotel for a weekend reset. The spa and garden room were both excellent." }
 ]
 
-export const Home = () => {
+const hotelCities = [
+  { name: "Agra, Uttar Pradesh", lat: 27.1767, lng: 78.0081 },
+  { name: "Varanasi, Uttar Pradesh", lat: 25.3176, lng: 82.9739 },
+  { name: "Mathura, Uttar Pradesh", lat: 27.4924, lng: 77.6737 },
+  { name: "Jaipur, Rajasthan", lat: 26.9124, lng: 75.7873 },
+  { name: "Udaipur, Rajasthan", lat: 24.5854, lng: 73.7125 },
+  { name: "Jodhpur, Rajasthan", lat: 26.2389, lng: 73.0243 },
+  { name: "Jaisalmer, Rajasthan", lat: 26.9157, lng: 70.9083 },
+  { name: "New Delhi, Delhi", lat: 28.6139, lng: 77.2090 },
+  { name: "Mumbai, Maharashtra", lat: 19.0760, lng: 72.8777 },
+  { name: "Pune, Maharashtra", lat: 18.5204, lng: 73.8567 },
+  { name: "Goa, Goa", lat: 15.2993, lng: 74.1240 },
+  { name: "Amritsar, Punjab", lat: 31.6340, lng: 74.8723 },
+  { name: "Shimla, Himachal Pradesh", lat: 31.1048, lng: 77.1734 },
+  { name: "Manali, Himachal Pradesh", lat: 32.2396, lng: 77.1887 },
+  { name: "Dharamshala, Himachal Pradesh", lat: 32.2190, lng: 76.3234 },
+  { name: "Srinagar, Jammu & Kashmir", lat: 34.0837, lng: 74.7973 },
+  { name: "Leh, Ladakh", lat: 34.1526, lng: 77.5771 },
+  { name: "Rishikesh, Uttarakhand", lat: 30.0869, lng: 78.2676 },
+  { name: "Nainital, Uttarakhand", lat: 29.3803, lng: 79.4636 },
+  { name: "Mussoorie, Uttarakhand", lat: 30.4599, lng: 78.0664 },
+  { name: "Kolkata, West Bengal", lat: 22.5726, lng: 88.3639 },
+  { name: "Darjeeling, West Bengal", lat: 27.0410, lng: 88.2627 },
+  { name: "Gangtok, Sikkim", lat: 27.3314, lng: 88.6138 },
+  { name: "Shillong, Meghalaya", lat: 25.5788, lng: 91.8933 },
+  { name: "Guwahati, Assam", lat: 26.1445, lng: 91.7362 },
+  { name: "Kochi, Kerala", lat: 9.9312, lng: 76.2673 },
+  { name: "Munnar, Kerala", lat: 10.0889, lng: 77.0595 },
+  { name: "Alleppey, Kerala", lat: 9.4981, lng: 76.3388 },
+  { name: "Bengaluru, Karnataka", lat: 12.9716, lng: 77.5946 },
+  { name: "Mysuru, Karnataka", lat: 12.2958, lng: 76.6394 },
+  { name: "Hampi, Karnataka", lat: 15.3350, lng: 76.4600 },
+  { name: "Hyderabad, Telangana", lat: 17.3850, lng: 78.4867 },
+  { name: "Chennai, Tamil Nadu", lat: 13.0827, lng: 80.2707 },
+  { name: "Ooty, Tamil Nadu", lat: 11.4102, lng: 76.6950 },
+  { name: "Kodaikanal, Tamil Nadu", lat: 10.2381, lng: 77.4892 }
+];
+
+export const Home = ({ theme }) => {
   const navigate = useNavigate()
   const featuredRooms = rooms.slice(0, 6)
+  const mapRef = useRef(null)
+  const mapInstanceRef = useRef(null)
+
+  useEffect(() => {
+    // Inject Leaflet CSS
+    if (!document.getElementById('leaflet-css')) {
+      const link = document.createElement('link')
+      link.id = 'leaflet-css'
+      link.rel = 'stylesheet'
+      link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'
+      document.head.appendChild(link)
+    }
+
+    // Inject Leaflet Custom Popup & Marker Styles
+    if (!document.getElementById('leaflet-custom-styles')) {
+      const style = document.createElement('style')
+      style.id = 'leaflet-custom-styles'
+      style.innerHTML = `
+        @keyframes marker-pulse {
+          0% { box-shadow: 0 0 0 0 rgba(185, 138, 90, 0.8); }
+          70% { box-shadow: 0 0 0 6px rgba(185, 138, 90, 0); }
+          100% { box-shadow: 0 0 0 0 rgba(185, 138, 90, 0); }
+        }
+        .custom-hotel-pin {
+          animation: marker-pulse 2s infinite;
+          border-radius: 50%;
+        }
+        .leaflet-popup-content-wrapper {
+          background: #211c18 !important;
+          color: #f7f1ea !important;
+          border-radius: 4px !important;
+          font-family: inherit !important;
+          box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
+          border: 1px solid #c49a6c !important;
+        }
+        .leaflet-popup-tip {
+          background: #211c18 !important;
+          border-bottom: 1px solid #c49a6c !important;
+        }
+        .leaflet-popup-content {
+          margin: 12px 16px !important;
+          line-height: 1.4 !important;
+        }
+        .leaflet-control-layers {
+          background: #211c18 !important;
+          color: #f7f1ea !important;
+          border: 1px solid #c49a6c !important;
+          border-radius: 4px !important;
+          font-family: inherit !important;
+          font-size: 11px !important;
+          box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
+          font-weight: 600 !important;
+          text-transform: uppercase !important;
+          letter-spacing: 0.05em !important;
+        }
+        .leaflet-control-layers-expanded {
+          padding: 8px 12px !important;
+        }
+        .leaflet-control-layers-selector {
+          margin-right: 6px !important;
+          accent-color: #b98a5a !important;
+        }
+        .leaflet-bar {
+          border: 1px solid #c49a6c !important;
+          box-shadow: 0 4px 15px rgba(0,0,0,0.15) !important;
+        }
+        .leaflet-bar a {
+          background-color: #211c18 !important;
+          color: #f7f1ea !important;
+          border-bottom: 1px solid #c49a6c !important;
+          transition: background-color 0.2s, color 0.2s;
+        }
+        .leaflet-bar a:hover {
+          background-color: #b98a5a !important;
+          color: white !important;
+        }
+        .leaflet-bar a.leaflet-disabled {
+          background-color: #1b1714 !important;
+          color: #6f6257 !important;
+        }
+        .leaflet-container {
+          background: #f7f1ea !important;
+        }
+        body.theme-dark-mode .leaflet-container {
+          background: #181311 !important;
+        }
+      `
+      document.head.appendChild(style)
+    }
+
+    const runMapInit = () => {
+      if (!window.L || !mapRef.current) return
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.remove()
+      }
+
+      const L = window.L
+
+      // Define different tile layers
+      const voyager = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        subdomains: 'abcd',
+        maxZoom: 20
+      })
+
+      const darkMatter = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        subdomains: 'abcd',
+        maxZoom: 20
+      })
+
+      const satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+        maxZoom: 19
+      })
+
+      // Use darkMatter if theme is dark, else voyager
+      const defaultLayer = theme === 'dark' ? darkMatter : voyager
+
+      const baseMaps = {
+        "Default Map": defaultLayer,
+        "Satellite Map": satellite
+      }
+
+      // Center map on Central India with zoom 5, loading the default layer
+      const map = L.map(mapRef.current, {
+        scrollWheelZoom: false,
+        layers: [defaultLayer]
+      }).setView([22.5937, 78.9629], 5)
+      mapInstanceRef.current = map
+
+      // Add layers control switcher in top right
+      L.control.layers(baseMaps, null, { position: 'topright' }).addTo(map)
+
+      // Add pins for all hotel cities
+      hotelCities.forEach(city => {
+        const customIcon = L.divIcon({
+          className: 'custom-marker',
+          html: `
+            <div class="custom-hotel-pin" style="
+              background-color: #211c18;
+              width: 12px;
+              height: 12px;
+              border-radius: 50%;
+              border: 2px solid #b98a5a;
+            "></div>
+          `,
+          iconSize: [12, 12],
+          iconAnchor: [6, 6]
+        })
+
+        L.marker([city.lat, city.lng], { icon: customIcon })
+          .addTo(map)
+          .bindPopup(`<div style="text-align: center;"><b style="color: #b98a5a; text-transform: uppercase; font-size: 10px; tracking: 0.1em;">Verona Stay</b><br/><span style="font-size: 12px; font-weight: 500;">${city.name}</span></div>`)
+      })
+    }
+
+    if (!window.L) {
+      const script = document.createElement('script')
+      script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'
+      script.async = true
+      script.onload = runMapInit
+      document.body.appendChild(script)
+    } else {
+      runMapInit()
+    }
+
+    return () => {
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.remove()
+        mapInstanceRef.current = null
+      }
+    }
+  }, [theme])
 
   return (
     <>
@@ -169,6 +381,22 @@ export const Home = () => {
             </div>
 
             <div className="pointer-events-none absolute right-0 top-0 z-10 h-full w-16 bg-gradient-to-l from-[#f7f1ea] to-transparent md:w-32" />
+          </div>
+        </div>
+      </section>
+
+      {/* Interactive India Locations Map */}
+      <section className="bg-[#fffaf5] px-4 py-16 border-t border-[#eadfd3] sm:px-6 md:px-16">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-10 text-center">
+            <p className="text-xs font-bold uppercase tracking-[0.35em] text-[#b98a5a]">Our Locations</p>
+            <h2 className="mt-3 text-4xl font-semibold text-[#211c18] md:text-5xl">Verona Stay Across India</h2>
+            <p className="mt-4 text-sm leading-6 text-[#6f6257] max-w-2xl mx-auto">
+              We are present in the country's most vibrant cities and serene retreats. Click on any pin to view the location details.
+            </p>
+          </div>
+          <div className="relative overflow-hidden shadow-[0_18px_45px_rgba(45,35,26,0.1)] border border-[#eadfd3] rounded bg-white">
+            <div ref={mapRef} className="h-[550px] w-full" style={{ zIndex: 1 }} />
           </div>
         </div>
       </section>

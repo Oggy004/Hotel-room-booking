@@ -31,7 +31,7 @@ const App = () => {
       {!isOwnerPath && <Navbar theme={theme} toggleTheme={toggleTheme} />}
       <div className="min-h-[70vh]">
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Home theme={theme} />} />
           <Route path="/rooms" element={<Rooms />} />
           <Route path="/room/:id" element={<RoomDetails />} />
           <Route path="/dashboard" element={<Dashboard />} />
